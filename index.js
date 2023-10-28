@@ -6,21 +6,31 @@ tweetBtn.addEventListener('click', function(){
     console.log(tweetInput.value)
 })
 
+document.addEventListener('click', function(event){
+    if(event.target.dataset.like){
+        handleLikeClick(event.target.dataset.like)
+    }
+
+})
+
+function handleLikeClick(tweetId){
+    const targetTweetObj = tweetsData.filter(function(tweet){
+        return tweet.uuid === tweetId
+    })[0]
+    if(targetTweetObj.isLiked){
+        targetTweetObj.likes--
+        targetTweetObj.isLiked = false
+    } else {
+        targetTweetObj.likes++
+        targetTweetObj.isLiked = true
+   
+    }
+    render()
+}
+
 function getFeedHtml(){
     let feedHtml = ``
-/*
-Challenge:
-1. Inside each span that has a class of "tweet-detail",
-   add an <i> tag.
-2. Give each <i> tag the classes it needs to render the
-   correct icons next to the numbers.
-   The classes you will need are:
-    fa-regular, 
-    fa-solid, 
-    fa-comment-dots, 
-    fa-heart, 
-    fa-retweet
-*/
+
     
     tweetsData.forEach(function(tweet){
         feedHtml += `
@@ -32,15 +42,23 @@ Challenge:
             <p class="tweet-text">${tweet.tweetText}</p>
             <div class="tweet-details">
                 <span class="tweet-detail">
-                    <i class="fa-regular fa-comment-dots"></i>
+                    <i class="fa-regular fa-comment-dots 
+                    data-reply=${tweet.uuid}
+                    ></i>
                     ${tweet.replies.length}
                 </span>
+
                 <span class="tweet-detail">
-                    <i class="fa-solid fa-heart"></i>
+                    <i class="fa-solid fa-heart"
+                    data-like=${tweet.uuid}
+                    ></i>
                     ${tweet.likes}
                 </span>
+
                 <span class="tweet-detail">
-                    <i class="fa-solid fa-retweet"></i>
+                    <i class="fa-solid fa-retweet"
+                    data-retweet=${tweet.uuid}
+                    ></i>
                     ${tweet.retweets}
                 </span>
             </div>   
