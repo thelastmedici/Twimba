@@ -1,10 +1,12 @@
 import { tweetsData } from './data.js'
-const tweetInput = document.getElementById('tweet-input')
-const tweetBtn = document.getElementById('tweet-btn')
+import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
 
-tweetBtn.addEventListener('click', function(){
-    console.log(tweetInput.value)
-})
+/*
+Challenge:
+1. Bring in uuidjs.
+*/
+
+const tweetInput = document.getElementById('tweet-input')
 
 document.addEventListener('click', function(e){
     if(e.target.dataset.like){
@@ -15,6 +17,9 @@ document.addEventListener('click', function(e){
     }
     else if(e.target.dataset.reply){
         handleReplyClick(e.target.dataset.reply)
+    }
+    else if(e.target.id === 'tweet-btn'){
+        handleTweetBtnClick()
     }
 })
  
@@ -49,7 +54,21 @@ function handleRetweetClick(tweetId){
 }
 
 function handleReplyClick(replyId){
-    document.getElementById('replies-${tweet.uuid}').classList.toggle('hidden')
+    document.getElementById(`replies-${replyId}`).classList.toggle('hidden')
+}
+
+function handleTweetBtnClick(){
+    tweetsData.push({
+        handle: `@Scrimba`,
+        profilePic: `images/scrimbalogo.png`,
+        likes: 0,
+        retweets: 0,
+        tweetText: tweetInput.value,
+        replies: [],
+        isLiked: false,
+        isRetweeted: false,
+        uuid: uuidv4()
+    })
 }
 
 function getFeedHtml(){
