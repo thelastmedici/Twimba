@@ -13,52 +13,81 @@ document.addEventListener('click', function(e){
     else if(e.target.dataset.retweet){
         handleRetweetClick(e.target.dataset.retweet)
     }
+    else if(e.target.dataset.reply){
+        handleReplyClick(e.target.dataset.reply)
+    }
 })
-
-
-
+ 
 function handleLikeClick(tweetId){ 
     const targetTweetObj = tweetsData.filter(function(tweet){
         return tweet.uuid === tweetId
     })[0]
-    
 
     if (targetTweetObj.isLiked){
         targetTweetObj.likes--
-
     }
     else{
-        targetTweetObj.likes++
-          
+        targetTweetObj.likes++ 
     }
-    targetTweetObj.isLiked = !targetTweetObj.isLiked    
+    targetTweetObj.isLiked = !targetTweetObj.isLiked
     render()
 }
 
-
 function handleRetweetClick(tweetId){
-    const targetRetweetObj = tweetsData.filter(function(tweet){
+    const targetTweetObj = tweetsData.filter(function(tweet){
         return tweet.uuid === tweetId
     })[0]
-
-    if(targetRetweetObj.isRetweeted){
-        targetRetweetObj.retweets--
+    
+    if(targetTweetObj.isRetweeted){
+        targetTweetObj.retweets--
     }
     else{
-        targetRetweetObj.retweets++
+        targetTweetObj.retweets++
     }
-    targetRetweetObj.isRetweeted = !targetRetweetObj.isRetweeted
-    render()
+    targetTweetObj.isRetweeted = !targetTweetObj.isRetweeted
+    render() 
+}
+
+function handleReplyClick(replyId){
+    document.getElementById('replies-${tweet.uuid}').classList.toggle('hidden')
 }
 
 function getFeedHtml(){
     let feedHtml = ``
-  
+    
     tweetsData.forEach(function(tweet){
+        
         let likeIconClass = ''
-        if(tweet.isLiked){
+        
+        if (tweet.isLiked){
             likeIconClass = 'liked'
         }
+        
+        let retweetIconClass = ''
+        
+        if (tweet.isRetweeted){
+            retweetIconClass = 'retweeted'
+        }
+        
+        let repliesHtml = ''
+        
+        if(tweet.replies.length > 0){
+            tweet.replies.forEach(function(reply){
+                repliesHtml+=`
+<div class="tweet-reply">
+    <div class="tweet-inner">
+        <img src="${reply.profilePic}" class="profile-pic">
+            <div>
+                <p class="handle">${reply.handle}</p>
+                <p class="tweet-text">${reply.tweetText}</p>
+            </div>
+        </div>
+</div>
+`
+            })
+        }
+        
+          
         feedHtml += `
 <div class="tweet">
     <div class="tweet-inner">
@@ -77,15 +106,10 @@ function getFeedHtml(){
                     <i class="fa-solid fa-heart ${likeIconClass}"
                     data-like="${tweet.uuid}"
                     ></i>
-                    ${tweet.likes}// document.addEventListener('click', function(event){
-                        //     if(event.target.dataset.retweet){
-                        //        handleRetweetClick(event.target.dataset.retweet) 
-                        //     }
-                           
-                        // })
+                    ${tweet.likes}
                 </span>
                 <span class="tweet-detail">
-                    <i class="fa-solid fa-retweet"
+                    <i class="fa-solid fa-retweet ${retweetIconClass}"
                     data-retweet="${tweet.uuid}"
                     ></i>
                     ${tweet.retweets}
@@ -93,6 +117,9 @@ function getFeedHtml(){
             </div>   
         </div>            
     </div>
+    <div class="hidden" id="replies-${tweet.uuid}">
+        ${repliesHtml}
+    </div>   
 </div>
 `
    })
